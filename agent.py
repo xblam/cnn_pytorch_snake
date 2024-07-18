@@ -56,6 +56,7 @@ class Agent:
 
     # only train the state we have at hand
     def train_short_memory(self, state, action, reward, next_state, done):
+        
         self.trainer.train_step(state, action, reward, next_state, done)
 
 
