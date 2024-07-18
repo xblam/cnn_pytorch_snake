@@ -160,7 +160,7 @@ class SnakeGameAI:
 
         self.direction = new_dir
 
-        # update the position of the snakes head depending on the input re recieve
+        # update the position of the snakes head depending on the input we recieve
         x = self.head.x
         y = self.head.y
         if self.direction == 0:
@@ -172,6 +172,5 @@ class SnakeGameAI:
         elif self.direction == 3:
             x -= 1
 
-        
-
+    
         self.head = Point(x, y)
