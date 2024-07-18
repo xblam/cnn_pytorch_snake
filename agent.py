@@ -92,7 +92,7 @@ class Agent:
 
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_step(states, actions, rewards, next_states, dones)
-        print(dones.size)
+        print(len(dones))
         #for state, action, reward, nexrt_state, done in mini_sample:
         #    self.trainer.train_step(state, action, reward, next_state, done)
 
