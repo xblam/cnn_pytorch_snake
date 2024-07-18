@@ -33,6 +33,7 @@ class SimpleCNN(nn.Module):
         file_name = os.path.join(model_folder_path, file_name)
         torch.save(self.state_dict(), file_name)
 
+
 class QTrainerCNN:
     def __init__(self, model, lr, gamma):
         self.lr = lr
@@ -40,6 +41,7 @@ class QTrainerCNN:
         self.model = model
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
+
 
     def train_step(self, state, action, reward, next_state, done):
         state = torch.tensor(state, dtype=torch.float).to(DEVICE)
@@ -55,6 +57,7 @@ class QTrainerCNN:
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
             done = (done, )
+        print(state.shape)
 
         # 1: predicted Q values with current state
         pred = self.model(state)
@@ -75,3 +78,21 @@ class QTrainerCNN:
         loss.backward()
 
         self.optimizer.step()
+
+if __name__ == '__main__':
+    model = SimpleCNN().to(DEVICE)
+
+    # Create a dummy input tensor
+    # Shape: [batch_size, in_channels, height, width]
+    import numpy as np
+    game_matrix = np.zeros((2,8,8))
+    game_matrix[0][1][1] = 1
+    game_matrix[1][1][2] = 1
+    input_tensor = torch.tensor(game_matrix, dtype=torch.float).to(DEVICE)
+
+    # Pass the input through the model
+    print(input_tensor)
+    output = model(input_tensor)
+
+    # Print the output
+    print(output)
