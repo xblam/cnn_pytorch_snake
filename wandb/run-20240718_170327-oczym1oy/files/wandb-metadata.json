@@ -1,0 +1,53 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.12.4",
+    "heartbeatAt": "2024-07-18T10:03:28.877186",
+    "startedAt": "2024-07-18T10:03:27.799829",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\Users\\CPU12297-local\\Desktop\\convolutional_nn\\pytorch snake\\agent.py",
+    "codePathLocal": "agent.py",
+    "codePath": "agent.py",
+    "git": {
+        "remote": "https://github.com/xblam/cnn_pytorch_snake.git",
+        "commit": "23f75294e75c55b33d95f3d437d272ef515db08b"
+    },
+    "email": "benlam05032004@gmail.com",
+    "root": "C:/Users/CPU12297-local/Desktop/convolutional_nn/pytorch snake",
+    "host": "CPU12297",
+    "username": "CPU12297-local",
+    "executable": "C:\\Users\\CPU12297-local\\anaconda3\\envs\\snakegame\\python.exe",
+    "cpu_count": 6,
+    "cpu_count_logical": 6,
+    "cpu_freq": {
+        "current": 2808.0,
+        "min": 0.0,
+        "max": 2808.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2808.0,
+            "min": 0.0,
+            "max": 2808.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 179.99999618530273,
+            "used": 93.28242111206055
+        }
+    },
+    "gpu": "NVIDIA GeForce GTX 1050 Ti",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce GTX 1050 Ti",
+            "memory_total": 4294967296
+        }
+    ],
+    "memory": {
+        "total": 15.940956115722656
+    }
+}

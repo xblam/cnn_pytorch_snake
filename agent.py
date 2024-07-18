@@ -6,6 +6,7 @@ from game import SnakeGameAI, Point
 from model import Linear_QNet, QTrainer
 from cnn_model import SimpleCNN, QTrainerCNN
 from helper import plot
+import wandb
 
 DEVICE =  torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 if torch.cuda.is_available():
@@ -76,12 +77,15 @@ class Agent:
 
 
 def train():
-    plot_scores = []
-    plot_mean_scores = []
-    total_score = 0
+    scores_list = []
     record = 0
     agent = Agent()
     game = SnakeGameAI()
+
+    run = wandb.init(
+    # Set the wandb project where this run will be logged
+        project="convolutional_snake_ai"
+    )
     while True:
         # get old state
         state_old = game.game_matrix
@@ -114,12 +118,17 @@ def train():
             elif agent.n_games % 100 == 0:
                 print('Game', agent.n_games, 'Score', score, 'Record:', record, 'Epsilon:', agent.epsilon)
 
+            scores_list.append(score)
+            running_mean = np.sum(scores_list[-5:])/5
 
-            plot_scores.append(score)
-            total_score += score
-            mean_score = total_score / agent.n_games
-            plot_mean_scores.append(mean_score)
             # plot(plot_scores, plot_mean_scores)
+
+            wandb.log({
+               "running mean (last5)": running_mean,
+               "highest score": record,
+               "epoch": agent.n_games,
+               "epsilon": agent.epsilon
+            })
 
 
 if __name__ == '__main__':

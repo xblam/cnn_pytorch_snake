@@ -37,10 +37,10 @@ get_reward = {
     "move" :  -0.1
 }
 
-show_display = True
+show_display = False
 class SnakeGameAI:    
     def __init__(self):
-        self.game_speed = 100
+        self.game_speed = 1000
         self.w = nCols * 100
         self.h = nRows * 100
         # init display
