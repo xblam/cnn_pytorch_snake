@@ -22,8 +22,6 @@ Point = namedtuple('Point', 'x, y')
 # rgb colors
 WHITE = (255, 255, 255)
 RED = (200,0,0)
-BLUE1 = (0, 0, 255)
-BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 100
@@ -39,7 +37,7 @@ get_reward = {
     "move" : -0.1
 }
 
-show_display = False
+show_display = True
 class SnakeGameAI:    
     def __init__(self):
         self.w = nCols * 100
@@ -55,29 +53,25 @@ class SnakeGameAI:
     def reset(self):
         # init game state
         self.direction = 0
-
-        # reset the game matrix
-        self.game_matrix = np.zeros((nCols, nRows))
-
         self.head = Point(nCols/2, nRows/2)
         # this time lets just set the snake as a list
-        self.snake = [self.head,
-                      Point(self.head.x-1, self.head.y)]
+        self.snake = [self.head, Point(self.head.x-1, self.head.y)]
         
         self.score = 0
         self.food = None
         self._place_food()
 
-
-
+        self.update_game_matrix
         if show_display:
             self._update_ui
         self.frame_iteration = 0
 
-        self.update_game_matrix
-        # print(self.game_matrix)
+ 
+        print(self.game_matrix)
     @property
     def update_game_matrix(self):
+        # reset the game matrix
+        self.game_matrix = np.zeros((nCols, nRows))
         for pos in self.snake:
             self.game_matrix[int(pos[0])][int(pos[1])] = 1
         self.game_matrix[self.food[0]][self.food[1]] = 2
@@ -130,7 +124,7 @@ class SnakeGameAI:
         # 5. update ui and clock
         if show_display:
             self._update_ui
-        self.clock.tick()
+        self.clock.tick(SPEED)
         # 6. return game over and score
         return reward, game_over, self.score
 
@@ -150,10 +144,10 @@ class SnakeGameAI:
     def _update_ui(self):
         self.display.fill(BLACK)
 
-        for pt in self.snake:
-            pygame.draw.rect(self.display, WHITE, pygame.Rect(pt.x*BLOCK_SIZE, pt.y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
-
-        pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x*BLOCK_SIZE, self.food.y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+        for i in range(self.game_matrix.shape[0]):
+            for j in range(self.game_matrix.shape[1]):
+                if self.game_matrix[i, j] == 1: pygame.draw.rect(self.display, WHITE, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+                if self.game_matrix[i, j] == 2: pygame.draw.rect(self.display, RED, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
 
         text = font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
