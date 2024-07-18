@@ -56,6 +56,9 @@ class SnakeGameAI:
         # init game state
         self.direction = 0
 
+        # reset the game matrix
+        self.game_matrix = np.zeros((nCols, nRows))
+
         self.head = Point(nCols/2, nRows/2)
         # this time lets just set the snake as a list
         self.snake = [self.head,

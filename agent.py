@@ -11,8 +11,8 @@ BATCH_SIZE = 1000
 LR = 0.001
 
 DEVICE =  torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-print(torch.cuda.is_available())
+if torch.cuda.is_available():
+    print("USING CUDA")
 
 class Agent:
 
@@ -24,7 +24,7 @@ class Agent:
         self.model = Linear_QNet(11, 256, 3).to(DEVICE)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
-
+    # change this to return the state that is the game matrix
     def get_state(self, game):
         head = game.snake[0]
         point_l = Point(head.x - 1, head.y)
