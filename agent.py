@@ -2,7 +2,7 @@ import torch
 import random
 import numpy as np
 from collections import deque
-from game import SnakeGameAI, Direction, Point
+from game import SnakeGameAI, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
 
@@ -27,15 +27,15 @@ class Agent:
 
     def get_state(self, game):
         head = game.snake[0]
-        point_l = Point(head.x - 20, head.y)
-        point_r = Point(head.x + 20, head.y)
-        point_u = Point(head.x, head.y - 20)
-        point_d = Point(head.x, head.y + 20)
+        point_l = Point(head.x - 1, head.y)
+        point_r = Point(head.x + 1, head.y)
+        point_u = Point(head.x, head.y - 1)
+        point_d = Point(head.x, head.y + 1)
         
-        dir_l = game.direction == Direction.LEFT
-        dir_r = game.direction == Direction.RIGHT
-        dir_u = game.direction == Direction.UP
-        dir_d = game.direction == Direction.DOWN
+        dir_l = game.direction == 2
+        dir_r = game.direction == 3
+        dir_u = game.direction == 0
+        dir_d = game.direction == 1
 
         state = [
             # Danger straight

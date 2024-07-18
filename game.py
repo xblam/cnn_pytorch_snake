@@ -8,11 +8,14 @@ pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
 #font = pygame.font.SysFont('arial', 25)
 
-class Direction(Enum):
-    RIGHT = 1
-    LEFT = 2
-    UP = 3
-    DOWN = 4
+#TODO: change this into number directions
+
+"""
+0 = UP
+1 = DOWN
+2 = RIGHT
+3 = LEFT
+"""
 
 Point = namedtuple('Point', 'x, y')
 
@@ -30,7 +33,13 @@ SPEED = 10000
 nRows = 8
 nCols = 8
 
-show_display = True
+get_reward = {
+    "food" : 10,
+    "death" : -10,
+    "move" : -0.1
+}
+
+show_display = False
 class SnakeGameAI:    
     def __init__(self):
         self.w = nCols * 100
@@ -42,10 +51,10 @@ class SnakeGameAI:
         self.clock = pygame.time.Clock()
         self.reset()
 
-
+    # resets the game everytime a snake dies
     def reset(self):
         # init game state
-        self.direction = Direction.RIGHT
+        self.direction = 0
 
         self.head = Point(nCols/2, nRows/2)
         # this time lets just set the snake as a list
@@ -56,22 +65,22 @@ class SnakeGameAI:
         self.score = 0
         self.food = None
         self._place_food()
-        self._update_ui()
+        if show_display:
+            self._update_ui()
         self.frame_iteration = 0
 
-
+    # put down food and make sure it doesnt spawn inside the snake
     def _place_food(self):
-        # x and y coordinates should be in relation to the snake
         x = random.randint(0, nCols-1)
         y = random.randint(0, nRows-1)
         self.food = Point(x, y)
         if self.food in self.snake:
             self._place_food()
 
-
+    # the snake does one step in the game
     def play_step(self, action):
         self.frame_iteration += 1
-        # 1. collect user input
+        # if we escape the game, quit the game
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -84,37 +93,41 @@ class SnakeGameAI:
         # 3. check if game over
         reward = 0
         game_over = False
+        
+        # dont let the snake idle for too long
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True
-            reward = -10
+            reward = get_reward["death"]
             return reward, game_over, self.score
 
         # 4. place new food or just move
         if self.head == self.food:
             self.score += 1
-            reward = 10
+            reward = get_reward["food"]
             self._place_food()
+
         else:
+            # punish the snake whenever it moves
+            reward = get_reward["move"]
             self.snake.pop()
         
         # 5. update ui and clock
         if show_display:
             self._update_ui()
-        self.clock.tick(SPEED)
+        self.clock.tick()
         # 6. return game over and score
         return reward, game_over, self.score
 
-    # basically we just check to see if the snake is dead
+    # check if the snake has collided with anything
     def is_collision(self, pt=None):
         if pt is None:
             pt = self.head
         # hits boundary
         if pt.x > nCols-1 or pt.x < 0 or pt.y > nRows-1 or pt.y < 0:
             return True
-        # hits itself
+        # if the snake hits itself
         if pt in self.snake[1:]:
             return True
-
         return False
 
 
@@ -133,7 +146,7 @@ class SnakeGameAI:
     def _move(self, action):
         # [straight, right, left]
 
-        clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
+        clock_wise = [0, 3, 1, 2]
         idx = clock_wise.index(self.direction)
 
         if np.array_equal(action, [1, 0, 0]):
@@ -147,15 +160,18 @@ class SnakeGameAI:
 
         self.direction = new_dir
 
+        # update the position of the snakes head depending on the input re recieve
         x = self.head.x
         y = self.head.y
-        if self.direction == Direction.RIGHT:
-            x += 1
-        elif self.direction == Direction.LEFT:
-            x -= 1
-        elif self.direction == Direction.DOWN:
-            y += 1
-        elif self.direction == Direction.UP:
+        if self.direction == 0:
             y -= 1
+        elif self.direction == 1:
+            y += 1
+        elif self.direction == 2:
+            x += 1
+        elif self.direction == 3:
+            x -= 1
+
+        
 
         self.head = Point(x, y)
