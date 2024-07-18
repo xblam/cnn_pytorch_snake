@@ -2,10 +2,8 @@ import torch
 import random
 import numpy as np
 from collections import deque
-from game import SnakeGameAI, Point
-from model import Linear_QNet, QTrainer
+from game import SnakeGameAI
 from cnn_model import SimpleCNN, QTrainerCNN
-from helper import plot
 import wandb
 
 DEVICE =  torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -76,16 +74,16 @@ class Agent:
         return final_move
 
 
-def train():
+def train(log, display):
     scores_list = []
     record = 0
     agent = Agent()
-    game = SnakeGameAI()
-
-    run = wandb.init(
-    # Set the wandb project where this run will be logged
-        project="convolutional_snake_ai"
-    )
+    game = SnakeGameAI(display)
+    if log:
+        wandb.init(
+        # Set the wandb project where this run will be logged
+            project="convolutional_snake_ai"
+        )
     while True:
         # get old state
         state_old = game.game_matrix
@@ -119,17 +117,19 @@ def train():
                 print('Game', agent.n_games, 'Score', score, 'Record:', record, 'Epsilon:', agent.epsilon)
 
             scores_list.append(score)
-            running_mean = np.sum(scores_list[-5:])/5
+            running_mean = np.sum(scores_list[-100:])/100
 
             # plot(plot_scores, plot_mean_scores)
-
-            wandb.log({
-               "running mean (last5)": running_mean,
-               "highest score": record,
-               "epoch": agent.n_games,
-               "epsilon": agent.epsilon
-            })
+            if log:
+                wandb.log({
+                "running mean (last 100)": running_mean,
+                "highest score": record,
+                "epoch": agent.n_games,
+                "epsilon": agent.epsilon
+                })
 
 
 if __name__ == '__main__':
-    train()
+    log = False
+    display = True
+    train(log, display)

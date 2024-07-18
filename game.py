@@ -37,14 +37,14 @@ get_reward = {
     "move" :  -0.1
 }
 
-show_display = False
 class SnakeGameAI:    
-    def __init__(self):
-        self.game_speed = 1000
+    def __init__(self, show_display):
+        self.show_display = show_display
+        self.game_speed = 10000
         self.w = nCols * 100
         self.h = nRows * 100
         # init display
-        if show_display:
+        if self.show_display:
             self.display = pygame.display.set_mode((self.w, self.h))
             pygame.display.set_caption('Snake')
         self.clock = pygame.time.Clock()
@@ -63,7 +63,7 @@ class SnakeGameAI:
         self._place_food()
 
         self.update_game_matrix
-        if show_display:
+        if self.show_display:
             self._update_ui
         self.frame_iteration = 0
 
@@ -123,7 +123,7 @@ class SnakeGameAI:
         self.update_game_matrix
         
         # 5. update ui and clock
-        if show_display:
+        if self.show_display:
             self._update_ui
         self.clock.tick(self.game_speed)
         # 6. return game over and score
