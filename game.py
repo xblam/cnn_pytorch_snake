@@ -66,8 +66,6 @@ class SnakeGameAI:
             self._update_ui
         self.frame_iteration = 0
 
- 
-        print(self.game_matrix)
     @property
     def update_game_matrix(self):
         # reset the game matrix
