@@ -24,7 +24,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 100
-SPEED = 10
+SPEED = 10000
 
 # set the amount of rows and columns so that we can make the chart instead of displaying the snake
 nRows = 8
@@ -47,7 +47,7 @@ class SnakeGameAI:
         # init game state
         self.direction = Direction.RIGHT
 
-        self.head = Point(self.w/2, self.h/2)
+        self.head = Point(nCols/2, nRows/2)
         # this time lets just set the snake as a list
         self.snake = [self.head,
                       Point(self.head.x-1, self.head.y)]
@@ -62,8 +62,8 @@ class SnakeGameAI:
 
     def _place_food(self):
         # x and y coordinates should be in relation to the snake
-        x = random.randint(0, nCols)
-        y = random.randint(0, nRows)
+        x = random.randint(0, nCols-1)
+        y = random.randint(0, nRows-1)
         self.food = Point(x, y)
         if self.food in self.snake:
             self._place_food()
@@ -129,7 +129,6 @@ class SnakeGameAI:
         text = font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()
-        #b1
 
     def _move(self, action):
         # [straight, right, left]
