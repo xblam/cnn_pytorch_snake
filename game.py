@@ -64,13 +64,23 @@ class SnakeGameAI:
         self.snake = [self.head,
                       Point(self.head.x-1, self.head.y)]
         
-
         self.score = 0
         self.food = None
         self._place_food()
+
+
+
         if show_display:
-            self._update_ui()
+            self._update_ui
         self.frame_iteration = 0
+
+        self.update_game_matrix
+        # print(self.game_matrix)
+    @property
+    def update_game_matrix(self):
+        for pos in self.snake:
+            self.game_matrix[int(pos[0])][int(pos[1])] = 1
+        self.game_matrix[self.food[0]][self.food[1]] = 2
 
     # put down food and make sure it doesnt spawn inside the snake
     def _place_food(self):
@@ -113,10 +123,13 @@ class SnakeGameAI:
             # punish the snake whenever it moves
             reward = get_reward["move"]
             self.snake.pop()
+
+        # update the game matrix
+        self.update_game_matrix
         
         # 5. update ui and clock
         if show_display:
-            self._update_ui()
+            self._update_ui
         self.clock.tick()
         # 6. return game over and score
         return reward, game_over, self.score
@@ -133,7 +146,7 @@ class SnakeGameAI:
             return True
         return False
 
-
+    @property
     def _update_ui(self):
         self.display.fill(BLACK)
 
@@ -177,3 +190,6 @@ class SnakeGameAI:
 
     
         self.head = Point(x, y)
+
+if __name__ == "__main__":
+    env = SnakeGameAI()
