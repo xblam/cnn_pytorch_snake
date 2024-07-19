@@ -159,15 +159,11 @@ class SnakeGameAI:
         for pos in self.snake[1:]:
             i,j = pos
             pygame.draw.rect(self.display, WHITE, pygame.Rect(i*BLOCK_SIZE, j*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-        print(self.game_matrix)
 
 
 
         # draw the food
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food[0]*BLOCK_SIZE, self.food[1]*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-
-
-
 
         text = font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
