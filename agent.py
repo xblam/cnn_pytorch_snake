@@ -28,6 +28,7 @@ class Agent:
     def __init__(self):
         self.epsilon = 1
         self.epsilon_decay = 0.0001
+        self.min_eps = 0.001
         self.learning_rate = 0.001
         self.gamma = 0.9
         self.memory = deque(maxlen = 100000)
@@ -62,7 +63,7 @@ class Agent:
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
         final_move = [0,0,0]
-        if random.randint(0, 1) < self.epsilon:
+        if random.randint(0, 1) < max(self.epsilon, self.min_eps):
             move = random.randint(0, 2)
             final_move[move] = 1
         else:
@@ -130,6 +131,6 @@ def train(log, display):
 
 
 if __name__ == '__main__':
-    log = False
-    display = True
+    log = True
+    display = False
     train(log, display)

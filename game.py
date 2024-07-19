@@ -23,6 +23,7 @@ Point = namedtuple('Point', 'x, y')
 WHITE = (255, 255, 255)
 RED = (200,0,0)
 BLACK = (0,0,0)
+GREEN = (0, 255, 0)
 
 BLOCK_SIZE = 100
 
@@ -40,7 +41,7 @@ get_reward = {
 class SnakeGameAI:    
     def __init__(self, show_display):
         self.show_display = show_display
-        self.game_speed = 10000
+        self.game_speed = 1
         self.w = nCols * 100
         self.h = nRows * 100
         # init display
@@ -52,7 +53,7 @@ class SnakeGameAI:
 
     # resets the game everytime a snake dies
     def reset(self):
-        # init game state
+        # init game state, snake is headed up
         self.direction = 0
         self.head = Point(nCols/2, nRows/2)
         # this time lets just set the snake as a list
@@ -70,12 +71,16 @@ class SnakeGameAI:
     @property
     def update_game_matrix(self):
         # reset the game matrix
-        self.game_matrix = np.zeros((2, nCols, nRows))
+        self.game_matrix = np.zeros((3, nCols, nRows))
         for pos in self.snake:
             # the first layer will only contain the white pixels of the snake
-            self.game_matrix[0][int(pos[0])][int(pos[1])] = 1
+            self.game_matrix[0][int(pos[1])][int(pos[0])] = 1
+        i,j = self.snake[0]
+        self.game_matrix[1][int(j)][int(i)] = 1
         # the second layer will just contain red of the food
-        self.game_matrix[1][self.food[0]][self.food[1]] = 1
+        self.game_matrix[2][self.food[1]][self.food[0]] = 1
+        # the third layer will be where the head of the snake is
+
 
     # put down food and make sure it doesnt spawn inside the snake
     def _place_food(self):
@@ -146,8 +151,19 @@ class SnakeGameAI:
         self.display.fill(BLACK)
         for i in range(nCols):
             for j in range(nRows):
-                if self.game_matrix[0, i, j] == 1: pygame.draw.rect(self.display, WHITE, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-                if self.game_matrix[1, i, j] == 1: pygame.draw.rect(self.display, RED, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+                # if self.game_matrix[0, i, j] == 1: pygame.draw.rect(self.display, WHITE, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+                # if self.game_matrix[2, i, j] == 1: pygame.draw.rect(self.display, RED, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+                print(self.food)
+        for pos in self.snake:
+            i,j = pos
+            pygame.draw.rect(self.display, WHITE, pygame.Rect(i*BLOCK_SIZE, j*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+        
+        pygame.draw.rect(self.display, GREEN, pygame.Rect(self.food[0]*BLOCK_SIZE, self.food[1]*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+        i, j = self.snake[0]
+        # print(self.game_matrix)
+        # pygame.draw.rect(self.display, GREEN, pygame.Rect(self.)))
+
+
 
         text = font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
@@ -186,4 +202,6 @@ class SnakeGameAI:
         self.head = Point(x, y)
 
 if __name__ == "__main__":
-    env = SnakeGameAI()
+    env = SnakeGameAI(True)
+    for i in range(10):
+        env.play_step([1,0,0])
