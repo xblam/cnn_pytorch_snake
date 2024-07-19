@@ -1,1 +1,1 @@
-{"running mean score (last 100)": 0.36, "running mean rewards (last 100)": -10.0, "highest score": 3, "epoch": 1445, "epsilon": 0.8555000000000159, "_timestamp": 1721359304.5954309, "_runtime": 352.2752549648285, "_step": 1444}
+{"running mean score (last 100)": 0.3, "running mean rewards (last 100)": -10.0, "highest score": 4, "epoch": 10562, "epsilon": -0.05619999999990676, "_timestamp": 1721361292.0411332, "_runtime": 2339.7209572792053, "_step": 10561}

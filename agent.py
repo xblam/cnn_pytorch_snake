@@ -73,11 +73,13 @@ class Agent:
             final_move[move] = 1
 
         return final_move
-
+    
+    def get_state(self, game):
+        print('testmp')
 
 def train(log, display):
     scores_list = []
-    rewards_list = []
+    n_turns_no_improvement = 0
     record = 0
     agent = Agent()
     game = SnakeGameAI(display)
@@ -86,7 +88,7 @@ def train(log, display):
         # Set the wandb project where this run will be logged
             project="convolutional_snake_ai"
         )
-    while True:
+    for i in range(20000):
         # get old state
         state_old = game.game_matrix
 
@@ -95,6 +97,7 @@ def train(log, display):
 
         # perform move and get new state
         reward, done, score = game.play_step(final_move)
+
         state_new = game.game_matrix
 
         # train short memory
@@ -107,34 +110,37 @@ def train(log, display):
             # train long memory, plot result
             game.reset()
             agent.n_games += 1
+            n_turns_no_improvement += 1
             agent.epsilon -= agent.epsilon_decay
             agent.train_long_memory()
 
             if score > record:
                 record = score
                 agent.model.save()
+                n_turns_no_improvement = 0
                 print('Game', agent.n_games, 'Score', score, 'Record:', record,'Epsilon:', agent.epsilon)
 
             elif agent.n_games % 100 == 0:
                 print('Game', agent.n_games, 'Score', score, 'Record:', record, 'Epsilon:', agent.epsilon)
 
             scores_list.append(score)
-            rewards_list.append(reward)
             running_mean_scores = np.sum(scores_list[-100:])/100
-            running_mean_rewards = np.sum(rewards_list[-100:])/100
 
             # plot(plot_scores, plot_mean_scores)
             if log:
                 wandb.log({
                 "running mean score (last 100)": running_mean_scores,
-                "running mean rewards (last 100)": running_mean_rewards,
                 "highest score": record,
                 "epoch": agent.n_games,
                 "epsilon": agent.epsilon
                 })
 
+        if n_turns_no_improvement > 10000:
+            break
+
+
 
 if __name__ == '__main__':
-    log = True
+    log = False
     display = True
     train(log, display)
