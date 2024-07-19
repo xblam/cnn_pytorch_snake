@@ -17,7 +17,6 @@ font = pygame.font.Font('arial.ttf', 25)
 3 = LEFT
 """
 
-Point = namedtuple('Point', 'x, y')
 
 # rgb colors
 WHITE = (255, 255, 255)
@@ -55,10 +54,12 @@ class SnakeGameAI:
     def reset(self):
         # init game state, snake is headed up
         self.direction = 0
-        self.head = Point(nCols/2, nRows/2)
+
+        self.head = (nCols/2, nRows/2)
         # this time lets just set the snake as a list
-        self.snake = [self.head, Point(self.head.x-1, self.head.y)]
-        
+        # maybe change this
+        self.snake = [self.head, (self.head[0], self.head[1]+1)]
+
         self.score = 0
         self.food = None
         self._place_food()
@@ -66,17 +67,20 @@ class SnakeGameAI:
         self.update_game_matrix
         if self.show_display:
             self._update_ui
+            pygame.time.delay(10000)
         self.frame_iteration = 0
 
     @property
     def update_game_matrix(self):
         # reset the game matrix
         self.game_matrix = np.zeros((3, nCols, nRows))
+
+        i,j = self.head
+        self.game_matrix[1][int(j)][int(i)] = 1
         for pos in self.snake:
             # the first layer will only contain the white pixels of the snake
             self.game_matrix[0][int(pos[1])][int(pos[0])] = 1
-        i,j = self.snake[0]
-        self.game_matrix[1][int(j)][int(i)] = 1
+
         # the second layer will just contain red of the food
         self.game_matrix[2][self.food[1]][self.food[0]] = 1
         # the third layer will be where the head of the snake is
@@ -86,7 +90,7 @@ class SnakeGameAI:
     def _place_food(self):
         x = random.randint(0, nCols-1)
         y = random.randint(0, nRows-1)
-        self.food = Point(x, y)
+        self.food = (x, y)
         if self.food in self.snake:
             self._place_food()
 
@@ -113,7 +117,7 @@ class SnakeGameAI:
             reward = get_reward["death"]
             return reward, game_over, self.score
 
-        # 4. place new food or just move
+        # if the snake hits the food
         if self.head == self.food:
             self.score += 1
             reward = get_reward["food"]
@@ -139,7 +143,7 @@ class SnakeGameAI:
         if pt is None:
             pt = self.head
         # hits boundary
-        if pt.x > nCols-1 or pt.x < 0 or pt.y > nRows-1 or pt.y < 0:
+        if pt[1] > nCols-1 or pt[1] < 0 or pt[0] > nRows-1 or pt[0] < 0:
             return True
         # if the snake hits itself
         if pt in self.snake[1:]:
@@ -149,19 +153,19 @@ class SnakeGameAI:
     @property
     def _update_ui(self):
         self.display.fill(BLACK)
-        for i in range(nCols):
-            for j in range(nRows):
-                # if self.game_matrix[0, i, j] == 1: pygame.draw.rect(self.display, WHITE, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-                # if self.game_matrix[2, i, j] == 1: pygame.draw.rect(self.display, RED, pygame.Rect(j*BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-                print(self.food)
-        for pos in self.snake:
+        # draw the head of the snake in different color and then draw the snake
+        i, j = self.head
+        pygame.draw.rect(self.display, GREEN, pygame.Rect(i*BLOCK_SIZE, j*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+        for pos in self.snake[1:]:
             i,j = pos
             pygame.draw.rect(self.display, WHITE, pygame.Rect(i*BLOCK_SIZE, j*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-        
-        pygame.draw.rect(self.display, GREEN, pygame.Rect(self.food[0]*BLOCK_SIZE, self.food[1]*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
-        i, j = self.snake[0]
-        # print(self.game_matrix)
-        # pygame.draw.rect(self.display, GREEN, pygame.Rect(self.)))
+        print(self.game_matrix)
+
+
+
+        # draw the food
+        pygame.draw.rect(self.display, RED, pygame.Rect(self.food[0]*BLOCK_SIZE, self.food[1]*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)) 
+
 
 
 
@@ -178,17 +182,17 @@ class SnakeGameAI:
         if np.array_equal(action, [1, 0, 0]):
             new_dir = clock_wise[idx] # no change
         elif np.array_equal(action, [0, 1, 0]):
-            next_idx = (idx + 1) % 4
+            next_idx = (idx - 1) % 4
             new_dir = clock_wise[next_idx] # right turn r -> d -> l -> u
         else: # [0, 0, 1]
-            next_idx = (idx - 1) % 4
+            next_idx = (idx + 1) % 4
             new_dir = clock_wise[next_idx] # left turn r -> u -> l -> d
 
         self.direction = new_dir
 
         # update the position of the snakes head depending on the input we recieve
-        x = self.head.x
-        y = self.head.y
+        x = self.head[0]
+        y = self.head[1]
         if self.direction == 0:
             y -= 1
         elif self.direction == 1:
@@ -198,10 +202,11 @@ class SnakeGameAI:
         elif self.direction == 3:
             x -= 1
 
-    
-        self.head = Point(x, y)
+        self.head = (x, y)
 
 if __name__ == "__main__":
     env = SnakeGameAI(True)
     for i in range(10):
+        # env.play_step([1,0,0])
         env.play_step([1,0,0])
+        env.play_step([0,1,0])
