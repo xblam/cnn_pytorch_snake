@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import os
+from game import SnakeGameAI
 
 DEVICE =  torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -12,10 +13,10 @@ class SimpleCNN(nn.Module):
         # in channels set to 2 because there is only red and white
         # size of the filter kernel will be 3x3
         # we will have 32 filters
-        self.conv1 = nn.Conv2d(in_channels=2, out_channels=32, kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.fc1 = nn.Linear(32*4*4, 128)
-        self.fc2 = nn.Linear(128, 3)
+        self.fc1 = nn.Linear(32*4*4, 1000)
+        self.fc2 = nn.Linear(1000, 3)
 
     def forward(self, x):
         # put the data through the convolutional layer, activate it using relu, and then pool the activations into pooling layer
@@ -79,19 +80,18 @@ class QTrainerCNN:
         self.optimizer.step()
 
 if __name__ == '__main__':
+    env = SnakeGameAI(True)
     model = SimpleCNN().to(DEVICE)
 
     # Create a dummy input tensor
     # Shape: [batch_size, in_channels, height, width]
     import numpy as np
-    game_matrix = np.zeros((2,8,8))
-    game_matrix[0][1][1] = 1
-    game_matrix[1][1][2] = 1
+    game_matrix = env.game_matrix
     input_tensor = torch.tensor(game_matrix, dtype=torch.float).to(DEVICE)
 
     # Pass the input through the model
     print(input_tensor)
     output = model(input_tensor)
 
-    # Print the output
+    # Print resulting predictions
     print(output)

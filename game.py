@@ -40,7 +40,7 @@ get_reward = {
 class SnakeGameAI:    
     def __init__(self, show_display):
         self.show_display = show_display
-        self.game_speed = 1
+        self.game_speed = 100000
         self.w = nCols * 100
         self.h = nRows * 100
         # init display
@@ -67,7 +67,7 @@ class SnakeGameAI:
         self.update_game_matrix
         if self.show_display:
             self._update_ui
-            pygame.time.delay(10000)
+            # pygame.time.delay(10000)
         self.frame_iteration = 0
 
     @property

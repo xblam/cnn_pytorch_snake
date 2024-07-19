@@ -132,5 +132,5 @@ def train(log, display):
 
 if __name__ == '__main__':
     log = True
-    display = False
+    display = True
     train(log, display)
