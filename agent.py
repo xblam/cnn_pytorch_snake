@@ -141,6 +141,6 @@ def train(log, display):
 
 
 if __name__ == '__main__':
-    log = True
+    log = False
     display = True
     train(log, display)
