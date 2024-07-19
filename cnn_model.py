@@ -15,8 +15,8 @@ class SimpleCNN(nn.Module):
         # we will have 32 filters
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.fc1 = nn.Linear(32*4*4, 1000)
-        self.fc2 = nn.Linear(1000, 3)
+        self.fc1 = nn.Linear(32*4*4, 256)
+        self.fc2 = nn.Linear(256, 3)
 
     def forward(self, x):
         # put the data through the convolutional layer, activate it using relu, and then pool the activations into pooling layer

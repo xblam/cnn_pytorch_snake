@@ -77,6 +77,7 @@ class Agent:
 
 def train(log, display):
     scores_list = []
+    rewards_list = []
     record = 0
     agent = Agent()
     game = SnakeGameAI(display)
@@ -118,12 +119,15 @@ def train(log, display):
                 print('Game', agent.n_games, 'Score', score, 'Record:', record, 'Epsilon:', agent.epsilon)
 
             scores_list.append(score)
-            running_mean = np.sum(scores_list[-100:])/100
+            rewards_list.append(reward)
+            running_mean_scores = np.sum(scores_list[-100:])/100
+            running_mean_rewards = np.sum(rewards_list[-100:])/100
 
             # plot(plot_scores, plot_mean_scores)
             if log:
                 wandb.log({
-                "running mean (last 100)": running_mean,
+                "running mean score (last 100)": running_mean_scores,
+                "running mean rewards (last 100)": running_mean_rewards,
                 "highest score": record,
                 "epoch": agent.n_games,
                 "epsilon": agent.epsilon

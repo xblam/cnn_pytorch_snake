@@ -32,7 +32,7 @@ nRows = 8
 nCols = 8
 
 get_reward = {
-    "food" :   50,
+    "food" :   10,
     "death" : -10,
     "move" :  -0.1
 }
