@@ -15,8 +15,8 @@ if torch.cuda.is_available():
 
 # set the parameters
 gamma = 0.9
-batchSize = 10000
-nLastStates = 3
+batchSize = 1000
+nLastStates = 4
 minEpsilon = 0.001
 learningRate = 0.001
 
@@ -50,7 +50,6 @@ class Agent:
         else:
             mini_sample = self.memory
 
-        print(len(mini_sample))
 
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_step(states, actions, rewards, next_states, dones)
@@ -84,19 +83,22 @@ def train(log, display):
     record = 0
     agent = Agent()
     game = SnakeGameAI(display)
-    # i will make the old and new state here
-    state = np.zeros((1,game.nRows, game.nCols))
-    for i in range(nLastStates):
-        print("working on it")
+    # it will be 12, since there are 3 colors to every snapshot, and we will be taking 4 snapshots intime in total
+    state_old = np.zeros((12, game.nRows, game.nCols))
+    state_new = np.zeros((12, game.nRows, game.nCols))
+
 
     if log:
         wandb.init(
         # Set the wandb project where this run will be logged
             project="convolutional_snake_ai"
         )
+
+    # the snake is playing the game (each loop is one move)
     while True:
-        # get old state
-        state_old = game.game_matrix
+        # update the old state
+        state_old = np.concatenate((state_old, game.game_matrix), axis = 0)
+        state_old = np.delete(state_old, slice(0,3), axis = 0)
         
         # get move
         final_move = agent.get_action(state_old)
@@ -104,7 +106,10 @@ def train(log, display):
         # perform move and get new state
         reward, done, score = game.play_step(final_move)
 
-        state_new = game.game_matrix
+        # do the same thing with the new state
+        state_new = np.concatenate((state_old, game.game_matrix), axis = 0)
+        state_new = np.delete(state_new, slice(0,3), axis = 0)
+
 
         # train short memory
         agent.train_short_memory(state_old, final_move, reward, state_new, done)

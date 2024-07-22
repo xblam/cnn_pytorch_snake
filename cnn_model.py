@@ -13,7 +13,7 @@ class SimpleCNN(nn.Module):
         # in channels set to 2 because there is only red and white
         # size of the filter kernel will be 3x3
         # we will have 32 filters
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=256, kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(in_channels=12, out_channels=256, kernel_size=3, stride=1, padding=1)
         # self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         # self.conv2 = nn.Conv2d(in_channels=32, out_channels=128, kernel_size=3, stride=1, padding=1)
         self.fc1 = nn.Linear(256*8*8, 256)
@@ -84,11 +84,21 @@ if __name__ == '__main__':
     env = SnakeGameAI(True)
     model = SimpleCNN().to(DEVICE)
 
+    import numpy as np
+    state_old = np.zeros((12, 8, 8))
+    print(state_old)
+    
+    print(state_old.shape)
+    state_old = np.concatenate((state_old, env.game_matrix), axis = 0)
+    print(state_old)
+    print(state_old.shape)
+    state_old = np.delete(state_old, slice(0,3), axis = 0)
+    print(state_old) 
+    
+    print(state_old.shape)
     # Create a dummy input tensor
     # Shape: [batch_size, in_channels, height, width]
-    import numpy as np
-    game_matrix = env.game_matrix
-    input_tensor = torch.tensor(game_matrix, dtype=torch.float).to(DEVICE)
+    input_tensor = torch.tensor(state_old, dtype=torch.float).to(DEVICE)
 
     # Pass the input through the model
     print(input_tensor)
