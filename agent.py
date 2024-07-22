@@ -5,6 +5,7 @@ from collections import deque
 from game import SnakeGameAI
 from cnn_model import SimpleCNN, QTrainerCNN
 import wandb
+import pygame
 
 DEVICE =  torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 if torch.cuda.is_available():
@@ -75,6 +76,9 @@ class Agent:
         return final_move
     
     def get_state(self, game):
+        # find a way to stack multiple states, and then send them into the program as one
+        # perhasp the best way would be to stack all of those, so the snake will ahve 4 frames of 3 layers each, for a total of channels of imformation 
+        
         print('testmp')
 
 def train(log, display):
@@ -83,12 +87,13 @@ def train(log, display):
     record = 0
     agent = Agent()
     game = SnakeGameAI(display)
+    
     if log:
         wandb.init(
         # Set the wandb project where this run will be logged
             project="convolutional_snake_ai"
         )
-    for i in range(20000):
+    while True:
         # get old state
         state_old = game.game_matrix
 
@@ -141,6 +146,6 @@ def train(log, display):
 
 
 if __name__ == '__main__':
-    log = False
+    log = True
     display = True
     train(log, display)
