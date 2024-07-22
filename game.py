@@ -27,9 +27,7 @@ GREEN = (0, 255, 0)
 BLOCK_SIZE = 100
 
 
-# set the amount of rows and columns so that we can make the chart instead of displaying the snake
-nRows = 8
-nCols = 8
+
 
 get_reward = {
     "food" :   10,
@@ -39,10 +37,13 @@ get_reward = {
 
 class SnakeGameAI:    
     def __init__(self, show_display):
+        # set the amount of rows and columns so that we can make the chart instead of displaying the snake
+        self.nRows = 8
+        self.nCols = 8
         self.show_display = show_display
         self.game_speed = 100000
-        self.w = nCols * 100
-        self.h = nRows * 100
+        self.w = self.nCols * 100
+        self.h = self.nRows * 100
         # init display
         if self.show_display:
             self.display = pygame.display.set_mode((self.w, self.h))
@@ -55,7 +56,7 @@ class SnakeGameAI:
         # init game state, snake is headed up
         self.direction = 0
 
-        self.head = (nCols/2, nRows/2)
+        self.head = (self.nCols/2, self.nRows/2)
         # this time lets just set the snake as a list
         # maybe change this
         self.snake = [self.head, (self.head[0], self.head[1]+1)]
@@ -73,7 +74,7 @@ class SnakeGameAI:
     @property
     def update_game_matrix(self):
         # reset the game matrix
-        self.game_matrix = np.zeros((3, nCols, nRows))
+        self.game_matrix = np.zeros((3, self.nCols, self.nRows))
 
         i,j = self.head
         self.game_matrix[1][int(j)][int(i)] = 1
@@ -88,8 +89,8 @@ class SnakeGameAI:
 
     # put down food and make sure it doesnt spawn inside the snake
     def _place_food(self):
-        x = random.randint(0, nCols-1)
-        y = random.randint(0, nRows-1)
+        x = random.randint(0, self.nCols-1)
+        y = random.randint(0, self.nRows-1)
         self.food = (x, y)
         if self.food in self.snake:
             self._place_food()
@@ -143,7 +144,7 @@ class SnakeGameAI:
         if pt is None:
             pt = self.head
         # hits boundary
-        if pt[1] > nCols-1 or pt[1] < 0 or pt[0] > nRows-1 or pt[0] < 0:
+        if pt[1] > self.nCols-1 or pt[1] < 0 or pt[0] > self.nRows-1 or pt[0] < 0:
             return True
         # if the snake hits itself
         if pt in self.snake[1:]:

@@ -15,8 +15,8 @@ if torch.cuda.is_available():
 
 # set the parameters
 gamma = 0.9
-batchSize = 100
-nLastStates = 4
+batchSize = 10000
+nLastStates = 3
 minEpsilon = 0.001
 learningRate = 0.001
 
@@ -50,6 +50,8 @@ class Agent:
         else:
             mini_sample = self.memory
 
+        print(len(mini_sample))
+
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_step(states, actions, rewards, next_states, dones)
         #for state, action, reward, nexrt_state, done in mini_sample:
@@ -74,12 +76,7 @@ class Agent:
             final_move[move] = 1
 
         return final_move
-    
-    def get_state(self, game):
-        # find a way to stack multiple states, and then send them into the program as one
-        # perhasp the best way would be to stack all of those, so the snake will ahve 4 frames of 3 layers each, for a total of channels of imformation 
-        
-        print('testmp')
+
 
 def train(log, display):
     scores_list = []
@@ -87,7 +84,11 @@ def train(log, display):
     record = 0
     agent = Agent()
     game = SnakeGameAI(display)
-    
+    # i will make the old and new state here
+    state = np.zeros((1,game.nRows, game.nCols))
+    for i in range(nLastStates):
+        print("working on it")
+
     if log:
         wandb.init(
         # Set the wandb project where this run will be logged
@@ -96,7 +97,7 @@ def train(log, display):
     while True:
         # get old state
         state_old = game.game_matrix
-
+        
         # get move
         final_move = agent.get_action(state_old)
 
